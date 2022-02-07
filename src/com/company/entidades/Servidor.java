@@ -1,6 +1,7 @@
 package com.company.entidades;
 
-import com.company.frames.chatW;
+import com.company.frames.chatCliente;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.ServerSocket;
@@ -12,13 +13,13 @@ public class Servidor extends Thread {
     Socket socket;
     DataInputStream DIS;
     DataOutputStream DOS;
-    chatW chatW;
+    chatCliente chatCliente;
 
     @Override
     public void run() {
         try{
             serverSocket = new ServerSocket(40000);
-            chatW.setVisible(true);
+            chatCliente.setVisible(true);
             while (true){
                 socket = serverSocket.accept();
 

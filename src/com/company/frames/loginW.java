@@ -15,6 +15,7 @@ public class loginW extends JDialog {
     public loginW() {
         setContentPane(contentPane);
         setModal(true);
+        setLocationRelativeTo(null);
         getRootPane().setDefaultButton(buttonOK);
 
         buttonOK.addActionListener(new ActionListener() {
@@ -46,8 +47,8 @@ public class loginW extends JDialog {
     }
 
     private void onOK() {
-        chatW chatWcliente = new chatW(usuario.getText(), motivo.getText());
-        chatW chatWATC = new chatW();
+        chatServer chatServer = new chatServer("Servicio Tecnico", usuario.getText(), motivo.getText());
+        chatCliente chatCliente = new chatCliente(usuario.getText(), motivo.getText());
         dispose();
     }
 
