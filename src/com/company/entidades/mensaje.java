@@ -4,11 +4,13 @@ public class mensaje {
     private String from;
     private String date;
     private String msg;
+    private String color;
 
-    public mensaje(String from, String date, String msg) {
+    public mensaje(String from, String date, String msg, String color) {
         this.from = from;
         this.date = date;
         this.msg = msg;
+        this.color = color;
     }
 
     public String getFrom() {
@@ -37,6 +39,11 @@ public class mensaje {
 
     @Override
     public String toString() {
-        return from + "[" + date + "]" + ": " + msg;
+        return  "<p> " +
+                "<span style=" +
+                color +
+                    from + "[" + date + "]" + ": " + msg +
+                "</br>" +
+                "</p>";
     }
 }

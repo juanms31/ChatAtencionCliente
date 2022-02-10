@@ -18,7 +18,7 @@ public class chatServer extends JFrame implements Runnable, ActionListener, KeyL
     private JPanel panelPrincipal;
     private JTextArea mensaje;
     private JButton enviarButton;
-    private JTextArea chat;
+    private JEditorPane chat;
     private JLabel nombreEntidad;
     private String usuario;
     private String motivo;
@@ -33,8 +33,10 @@ public class chatServer extends JFrame implements Runnable, ActionListener, KeyL
         this.cliente =  cliente;
         nombreEntidad.setText("At. Cliente");
         setLocation(pantalla.width/4,pantalla.height/4);
-        chat.setForeground(Color.blue);
-        chat.append(cliente + "[" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"))  + "]" + ": " + motivo + "\n");
+        chat.setContentType("text/html");
+        chat.setText("<p> " +
+                "<span style=\"color: #3366ff;\">" + usuario + "[" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"))  + "]" + ": " + motivo + "</br>" +
+                "</p>");
         add(panelPrincipal);
         Thread thread = new Thread(this);
         thread.start();
@@ -78,14 +80,6 @@ public class chatServer extends JFrame implements Runnable, ActionListener, KeyL
         this.enviarButton = enviarButton;
     }
 
-    public JTextArea getChat() {
-        return chat;
-    }
-
-    public void setChat(JTextArea chat) {
-        this.chat = chat;
-    }
-
     @Override
     public void run() {
         final int PORT = 9995;
@@ -99,7 +93,12 @@ public class chatServer extends JFrame implements Runnable, ActionListener, KeyL
                 InputStream is = so.getInputStream();
                 DataInputStream DIS = new DataInputStream(is);
                 String mensaje = DIS.readUTF();
-                chat.append(mensaje + "\n");
+                String chatRecord = chat.getText();
+                String newChat = chatRecord.concat("<p> " +
+                        "<span style=\"color: #ff0000;\">" + mensaje + "</br>" +
+                        "</p>");
+                // FIXME: 10/02/2022 ARRAYLIST DE MENSAJES QUE SE INTRODUZCAN EN MEDIO DEL HTML Y QUE EL SETTEXT SIMPLEMENTE LO RECORRA EN EJECUCION PARA AñADIRLO
+                chat.setText(newChat);
                 DIS.close();
                 so.close();
             }
@@ -116,8 +115,13 @@ public class chatServer extends JFrame implements Runnable, ActionListener, KeyL
 
             OutputStream os = so.getOutputStream();
             DataOutputStream DOS = new DataOutputStream(os);
-            EMensaje = new mensaje(usuario,LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")), mensaje.getText().replaceAll("\n",""));
-            chat.append(EMensaje.toString() + "\n");
+            EMensaje = new mensaje(usuario,LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")), mensaje.getText().replaceAll("\n",""),"\"color: #3366ff;\">");
+            String chatRecord = chat.getText();
+            String newChat = chatRecord.concat("<p> " +
+                    "<span style=\"color: #3366ff;\">" + EMensaje.toString() + "</br>" +
+                    "</p>");
+            chat.setText(newChat);
+            // FIXME: 10/02/2022 ARRAYLIST DE MENSAJES QUE SE INTRODUZCAN EN MEDIO DEL HTML Y QUE EL SETTEXT SIMPLEMENTE LO RECORRA EN EJECUCION PARA AñADIRLO
             mensaje.setText("");
             DOS.writeUTF(EMensaje.toString());
 
