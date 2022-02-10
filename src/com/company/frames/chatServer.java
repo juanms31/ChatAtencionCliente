@@ -13,6 +13,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 
 public class chatServer extends JFrame implements Runnable, ActionListener, KeyListener {
     private JPanel panelPrincipal;
@@ -25,6 +26,7 @@ public class chatServer extends JFrame implements Runnable, ActionListener, KeyL
     private String cliente;
     private Dimension pantalla = Toolkit.getDefaultToolkit().getScreenSize();
     private mensaje EMensaje;
+    private ArrayList<String> historialMensajes = new ArrayList<String>();
 
     public chatServer(String usuario, String cliente, String motivo) {
         initWindow();
@@ -34,9 +36,11 @@ public class chatServer extends JFrame implements Runnable, ActionListener, KeyL
         nombreEntidad.setText("At. Cliente");
         setLocation(pantalla.width/4,pantalla.height/4);
         chat.setContentType("text/html");
-        chat.setText("<p> " +
-                "<span style=\"color: #3366ff;\">" + usuario + "[" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"))  + "]" + ": " + motivo + "</br>" +
-                "</p>");
+        String mensajeInicial = "<p> " +
+                "<span style=\"color: #3366ff;\">" + cliente + "[" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"))  + "]" + ": " + motivo +
+                "</p>";
+        historialMensajes.add(mensajeInicial);
+        chat.setText(mensajeInicial);
         add(panelPrincipal);
         Thread thread = new Thread(this);
         thread.start();
@@ -93,11 +97,9 @@ public class chatServer extends JFrame implements Runnable, ActionListener, KeyL
                 InputStream is = so.getInputStream();
                 DataInputStream DIS = new DataInputStream(is);
                 String mensaje = DIS.readUTF();
-                String chatRecord = chat.getText();
-                String newChat = chatRecord.concat("<p> " +
-                        "<span style=\"color: #ff0000;\">" + mensaje + "</br>" +
-                        "</p>");
-                // FIXME: 10/02/2022 ARRAYLIST DE MENSAJES QUE SE INTRODUZCAN EN MEDIO DEL HTML Y QUE EL SETTEXT SIMPLEMENTE LO RECORRA EN EJECUCION PARA AñADIRLO
+                historialMensajes.add(mensaje);
+                String newChat = "";
+                newChat = rellenarChat(newChat);
                 chat.setText(newChat);
                 DIS.close();
                 so.close();
@@ -108,6 +110,13 @@ public class chatServer extends JFrame implements Runnable, ActionListener, KeyL
         }
     }
 
+    private String rellenarChat(String newChat) {
+        for (String nuevoMensaje : historialMensajes) {
+            newChat = newChat.concat(nuevoMensaje);
+        }
+        return newChat;
+    }
+
     public void writeMesagge(){
         Socket so;
         try {
@@ -116,13 +125,11 @@ public class chatServer extends JFrame implements Runnable, ActionListener, KeyL
             OutputStream os = so.getOutputStream();
             DataOutputStream DOS = new DataOutputStream(os);
             EMensaje = new mensaje(usuario,LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")), mensaje.getText().replaceAll("\n",""),"\"color: #3366ff;\">");
-            String chatRecord = chat.getText();
-            String newChat = chatRecord.concat("<p> " +
-                    "<span style=\"color: #3366ff;\">" + EMensaje.toString() + "</br>" +
-                    "</p>");
-            chat.setText(newChat);
-            // FIXME: 10/02/2022 ARRAYLIST DE MENSAJES QUE SE INTRODUZCAN EN MEDIO DEL HTML Y QUE EL SETTEXT SIMPLEMENTE LO RECORRA EN EJECUCION PARA AñADIRLO
+            historialMensajes.add(EMensaje.toString());
+            String newChat = "";
+            newChat = rellenarChat(newChat);
             mensaje.setText("");
+            chat.setText(newChat);
             DOS.writeUTF(EMensaje.toString());
 
             DOS.close();

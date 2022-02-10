@@ -13,6 +13,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 
 import static java.lang.Thread.sleep;
 
@@ -26,6 +27,7 @@ public class chatCliente extends JFrame implements Runnable, ActionListener, Key
     private String motivo;
     private Dimension pantalla = Toolkit.getDefaultToolkit().getScreenSize();
     private mensaje EMensaje;
+    private ArrayList<String> historialMensajes = new ArrayList<String>();
 
     public chatCliente(String usuario, String motivo) {
         initWindow();
@@ -34,9 +36,11 @@ public class chatCliente extends JFrame implements Runnable, ActionListener, Key
         nombreEntidad.setText(usuario);
         setLocation(pantalla.width/2,pantalla.height/4);
         chat.setContentType("text/html");
-        chat.setText("<p> " +
-                "<span style=\"color: #ff0000;\">" + usuario + "[" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"))  + "]" + ": " + motivo + "</br>" +
-                "</p>");
+        String mensajeInicial = "<p> " +
+                "<span style=\"color: #ff0000;\">" + usuario + "[" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"))  + "]" + ": " + motivo +
+                "</p>";
+        historialMensajes.add(mensajeInicial);
+        chat.setText(mensajeInicial);
         add(panelPrincipal);
         Thread thread = new Thread(this);
         thread.start();
@@ -93,10 +97,9 @@ public class chatCliente extends JFrame implements Runnable, ActionListener, Key
                 InputStream is = so.getInputStream();
                 DataInputStream DIS = new DataInputStream(is);
                 String mensaje = DIS.readUTF();
-                String chatRecord = chat.getText();
-                String newChat = chatRecord.concat("<p> " +
-                        "<span style=\"color: #ff0000;\">" + mensaje + "</br>" +
-                        "</p>");
+                historialMensajes.add(mensaje);
+                String newChat = "";
+                newChat = rellenarChat(newChat);
                 chat.setText(newChat);
                 repaint();
                 DIS.close();
@@ -108,6 +111,13 @@ public class chatCliente extends JFrame implements Runnable, ActionListener, Key
         }
     }
 
+    private String rellenarChat(String newChat) {
+        for (String nuevoMensaje : historialMensajes) {
+            newChat = newChat.concat(nuevoMensaje);
+        }
+        return newChat;
+    }
+
     public void writeMesagge() {
         Socket so;
         try {
@@ -116,14 +126,11 @@ public class chatCliente extends JFrame implements Runnable, ActionListener, Key
             OutputStream os = so.getOutputStream();
             DataOutputStream DOS = new DataOutputStream(os);
             EMensaje = new mensaje(usuario, LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")), mensaje.getText().replaceAll("\n",""),"\"color: #ff0000;\">");
-            String chatRecord = chat.getText();
-            String newChat = chatRecord.concat("<p> " +
-                    "<span style=\"color: #ff0000;\">" + EMensaje.toString() + "</br>" +
-                    "</p>");
+            historialMensajes.add(EMensaje.toString());
+            String newChat = "";
+            newChat = rellenarChat(newChat);
+            mensaje.setText("");
             chat.setText(newChat);
-            System.out.println(newChat);
-            mensaje.setText("");
-            mensaje.setText("");
             DOS.writeUTF(EMensaje.toString());
 
             DOS.close();

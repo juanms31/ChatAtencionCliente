@@ -43,7 +43,6 @@ public class mensaje {
                 "<span style=" +
                 color +
                     from + "[" + date + "]" + ": " + msg +
-                "</br>" +
                 "</p>";
     }
 }
