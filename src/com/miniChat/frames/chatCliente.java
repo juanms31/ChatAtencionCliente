@@ -1,6 +1,6 @@
-package com.company.frames;
+package com.miniChat.frames;
 
-import com.company.entidades.mensaje;
+import com.miniChat.entidades.mensaje;
 
 import javax.swing.*;
 import java.awt.*;

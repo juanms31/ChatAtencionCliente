@@ -1,4 +1,4 @@
-package com.company.dataBase;
+package com.miniChat.dataBase;
 
 import javax.swing.*;
 import java.sql.Connection;

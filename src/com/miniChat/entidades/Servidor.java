@@ -1,6 +1,6 @@
-package com.company.entidades;
+package com.miniChat.entidades;
 
-import com.company.frames.chatCliente;
+import com.miniChat.frames.chatCliente;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

@@ -1,4 +1,4 @@
-package com.company.frames;
+package com.miniChat.frames;
 
 import javax.swing.*;
 import java.awt.event.*;

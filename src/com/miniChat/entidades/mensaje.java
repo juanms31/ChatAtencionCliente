@@ -1,4 +1,4 @@
-package com.company.entidades;
+package com.miniChat.entidades;
 
 public class mensaje {
     private String from;
